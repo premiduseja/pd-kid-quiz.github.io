@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOWA Test Practice Quiz - For Kids</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div class="home-container">
+            <h1 class="app-title">🧠 IOWA Test Practice Quiz</h1>
+            <p class="subtitle">Practice for 7-8 Years Old kids</p>
+            
+            <div class="welcome-box">
+                <p class="welcome-text">Choose a quiz type to get started!</p>
+            </div>
+
+            <div class="button-container">
+                <button class="quiz-button quantitative-btn" onclick="startQuiz('quantitative')">
+                    <span class="emoji">🔢</span>
+                    <span class="btn-text">Quantitative Quiz</span>
+                    <span class="btn-subtitle">(Numbers & Math)</span>
+                </button>
+                
+                <button class="quiz-button nonverbal-btn" onclick="startQuiz('nonverbal')">
+                    <span class="emoji">🎨</span>
+                    <span class="btn-text">Non-Verbal Quiz</span>
+                    <span class="btn-subtitle">(Shapes & Patterns)</span>
+                </button>
+            </div>
+
+            <div class="info-box">
+                <h3>Tips for Success:</h3>
+                <ul>
+                    <li>Read each question carefully</li>
+                    <li>Look at all answer choices</li>
+                    <li>Take your time - no rush!</li>
+                    <li>Have fun while learning! 🌟</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="screen">
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <button class="back-btn" onclick="goHome()">← Back</button>
+                <div class="quiz-title" id="quizTitle"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText"></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-box" id="questionBox"></div>
+                
+                <div class="options-container" id="optionsContainer"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>
+                    ← Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+                    Next →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="screen">
+        <div class="results-container">
+            <h1 class="results-title">Quiz Complete! 🎉</h1>
+            
+            <div class="score-box">
+                <div class="score-circle" id="scoreCircle"></div>
+                <p class="score-text" id="scoreText"></p>
+                <p class="score-feedback" id="scoreFeedback"></p>
+            </div>
+
+            <div class="results-details">
+                <div class="detail-item correct">
+                    <span class="detail-label">Correct Answers:</span>
+                    <span class="detail-value" id="correctCount"></span>
+                </div>
+                <div class="detail-item incorrect">
+                    <span class="detail-label">Incorrect Answers:</span>
+                    <span class="detail-value" id="incorrectCount"></span>
+                </div>
+            </div>
+
+            <div class="review-section">
+                <h2>Review Your Answers</h2>
+                <div class="review-list" id="reviewList"></div>
+            </div>
+
+            <div class="button-container">
+                <button class="btn btn-secondary" onclick="goHome()">
+                    ← Back to Home
+                </button>
+                <button class="btn btn-primary" onclick="restartQuiz()">
+                    🔄 Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
