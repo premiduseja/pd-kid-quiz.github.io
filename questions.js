@@ -3581,7 +3581,7 @@ const QUANTITATIVE_QUESTIONS = [
         options: ["30", "35", "25", "20"],
         correct: 2,
         explanation: "The next number is 25."
-    }
+    },
     {
         question: "What is 99 + 1?",
         options: ["100", "98", "101", "99"],
@@ -3605,7 +3605,6 @@ const QUANTITATIVE_QUESTIONS = [
         options: ["8", "9", "11", "10"],
         correct: 2,
         explanation: "11 is the next prime number after 7."
-    }
     }
 ];
 
@@ -7048,6 +7047,5 @@ const NONVERBAL_QUESTIONS = [
         options: ["Original", "Flipped", "Rotated", "Inverted"],
         correct: 1,
         explanation: "Answer is Flipped."
-    }
     }
 ];
