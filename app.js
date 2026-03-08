@@ -180,22 +180,30 @@ function previousQuestion() {
 function finishQuiz() {
     // Calculate score
     let correct = 0;
+    let attempted = 0;
+    
     for (let i = 0; i < quizQuestions.length; i++) {
         const shuffledQuestion = getShuffledQuestion(quizQuestions[i], i);
-        if (answers[i] === shuffledQuestion.correct) {
-            correct++;
+        if (answers[i] !== null) {
+            attempted++;
+            if (answers[i] === shuffledQuestion.correct) {
+                correct++;
+            }
         }
     }
     
     const total = quizQuestions.length;
-    const percentage = Math.round((correct / total) * 100);
+    const skipped = total - attempted;
+    
+    // Calculate percentage based on attempted questions only, or 0 if none attempted
+    const percentage = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
     
     // Display results
-    displayResults(correct, total, percentage);
+    displayResults(correct, attempted, total, skipped, percentage);
 }
 
 // Display results
-function displayResults(correct, total, percentage) {
+function displayResults(correct, attempted, total, skipped, percentage) {
     // Score circle
     const scoreCircle = document.querySelector('.score-circle');
     scoreCircle.textContent = percentage;
@@ -205,7 +213,9 @@ function displayResults(correct, total, percentage) {
     
     // Score text
     let feedback = '';
-    if (percentage >= 90) {
+    if (attempted === 0) {
+        feedback = "You didn't answer any questions. Try again! 💪";
+    } else if (percentage >= 90) {
         feedback = "Excellent! You're a star! 🌟";
     } else if (percentage >= 80) {
         feedback = "Great job! Keep practicing! 😊";
@@ -221,44 +231,72 @@ function displayResults(correct, total, percentage) {
     document.getElementById('scoreFeedback').textContent = feedback;
     
     // Details
-    const incorrect = total - correct;
+    const incorrect = attempted - correct;
     document.getElementById('correctCount').textContent = correct;
     document.getElementById('incorrectCount').textContent = incorrect;
     
+    // Show skipped section only if there are skipped questions
+    const skippedSection = document.getElementById('skippedSection');
+    if (skipped > 0) {
+        skippedSection.style.display = 'flex';
+        document.getElementById('skippedCount').textContent = skipped;
+    } else {
+        skippedSection.style.display = 'none';
+    }
+    
     // Review answers
-    displayReview(correct, total);
+    displayReview(correct, attempted, total, skipped);
     
     showScreen('results');
 }
 
 // Display review of answers
-function displayReview(correct, total) {
+function displayReview(correct, attempted, total, skipped) {
     const reviewList = document.getElementById('reviewList');
     reviewList.innerHTML = '';
     
     for (let i = 0; i < quizQuestions.length; i++) {
         const shuffledQuestion = getShuffledQuestion(quizQuestions[i], i);
         const userAnswer = answers[i];
+        const isAnswered = userAnswer !== null;
         const isCorrect = userAnswer === shuffledQuestion.correct;
         
         const reviewItem = document.createElement('div');
-        reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
         
-        const selectedAnswer = userAnswer !== null ? shuffledQuestion.options[userAnswer] : 'Not answered';
-        const correctAnswer = shuffledQuestion.options[shuffledQuestion.correct];
-        
-        reviewItem.innerHTML = `
+        let reviewItemHTML = `
             <div class="review-question">Question ${i + 1}: ${quizQuestions[i].question}</div>
-            <div class="review-answer">
-                <strong>Your answer:</strong> ${selectedAnswer}<br>
-                ${!isCorrect ? `<strong>Correct answer:</strong> ${correctAnswer}<br>` : ''}
-                ${quizQuestions[i].explanation ? `<strong>Explanation:</strong> ${quizQuestions[i].explanation}` : ''}
-            </div>
-            <div class="review-status ${isCorrect ? 'correct' : 'incorrect'}">
-                ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
-            </div>
         `;
         
+        if (isAnswered) {
+            reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+            const selectedAnswer = shuffledQuestion.options[userAnswer];
+            const correctAnswer = shuffledQuestion.options[shuffledQuestion.correct];
+            
+            reviewItemHTML += `
+                <div class="review-answer">
+                    <strong>Your answer:</strong> ${selectedAnswer}<br>
+                    ${!isCorrect ? `<strong>Correct answer:</strong> ${correctAnswer}<br>` : ''}
+                    ${quizQuestions[i].explanation ? `<strong>Explanation:</strong> ${quizQuestions[i].explanation}` : ''}
+                </div>
+                <div class="review-status ${isCorrect ? 'correct' : 'incorrect'}">
+                    ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                </div>
+            `;
+        } else {
+            reviewItem.className = 'review-item skipped';
+            reviewItemHTML += `
+                <div class="review-answer">
+                    <strong>Your answer:</strong> <em>Not answered</em><br>
+                    <strong>Correct answer:</strong> ${shuffledQuestion.options[shuffledQuestion.correct]}<br>
+                    ${quizQuestions[i].explanation ? `<strong>Explanation:</strong> ${quizQuestions[i].explanation}` : ''}
+                </div>
+                <div class="review-status skipped">
+                    ⊘ Skipped
+                </div>
+            `;
+        }
+        
+        reviewItem.innerHTML = reviewItemHTML;
         reviewList.appendChild(reviewItem);
     }
 }
@@ -271,4 +309,12 @@ function goHome() {
 // Restart quiz
 function restartQuiz() {
     startQuiz(currentQuizType);
+}
+
+// End test early
+function endTestEarly() {
+    const confirmed = confirm('Are you sure you want to end the test now? You will see results based on your current answers.');
+    if (confirmed) {
+        finishQuiz();
+    }
 }
