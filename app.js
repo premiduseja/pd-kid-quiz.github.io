@@ -1,10 +1,11 @@
 // Global state
 let currentQuizType = '';
 let currentQuestion = 0;
-let answers = new Array(120).fill(null); // Max 120 questions
+let answers = new Array(50).fill(null); // 50 questions per test
 let quizQuestions = [];
 let shuffledOptions = {}; // Cache shuffled options to keep them consistent
 let correctAnswerIndices = {}; // Track where correct answer is after shuffling
+const QUESTIONS_PER_TEST = 50; // Number of questions to randomly select for each test
 
 // Screens
 const homeScreen = document.getElementById('homeScreen');
@@ -44,19 +45,23 @@ function getShuffledQuestion(question, questionIndex) {
 function startQuiz(type) {
     currentQuizType = type;
     currentQuestion = 0;
-    answers = new Array(120).fill(null);
+    answers = new Array(QUESTIONS_PER_TEST).fill(null);
     shuffledOptions = {}; // Reset shuffled options
     correctAnswerIndices = {}; // Reset correct answer indices
     
     // Load questions based on type
+    let allQuestions = [];
     if (type === 'quantitative') {
-        quizQuestions = [...QUANTITATIVE_QUESTIONS];
+        allQuestions = [...QUANTITATIVE_QUESTIONS];
     } else {
-        quizQuestions = [...NONVERBAL_QUESTIONS];
+        allQuestions = [...NONVERBAL_QUESTIONS];
     }
     
-    // Shuffle questions order
-    quizQuestions = shuffleQuestions(quizQuestions);
+    // Shuffle all questions
+    allQuestions = shuffleQuestions(allQuestions);
+    
+    // Select only the first 50 randomly shuffled questions
+    quizQuestions = allQuestions.slice(0, QUESTIONS_PER_TEST);
     
     // Update quiz title
     const title = type === 'quantitative' ? '🔢 Quantitative Quiz' : '🎨 Non-Verbal Quiz';
@@ -211,7 +216,7 @@ function displayResults(correct, attempted, total, skipped, percentage) {
                                    percentage >= 60 ? 'linear-gradient(135deg, #F5A623, #E8932F)' : 
                                    'linear-gradient(135deg, #D0021B, #A00116)';
     
-    // Score text
+    // Score text - show percentage based on attempted questions
     let feedback = '';
     if (attempted === 0) {
         feedback = "You didn't answer any questions. Try again! 💪";
@@ -230,16 +235,16 @@ function displayResults(correct, attempted, total, skipped, percentage) {
     document.getElementById('scoreText').textContent = percentage + '%';
     document.getElementById('scoreFeedback').textContent = feedback;
     
-    // Details
+    // Details - show clear breakdown
     const incorrect = attempted - correct;
-    document.getElementById('correctCount').textContent = correct;
-    document.getElementById('incorrectCount').textContent = incorrect;
+    document.getElementById('correctCount').textContent = `${correct} out of ${attempted} attempted`;
+    document.getElementById('incorrectCount').textContent = `${incorrect} out of ${attempted} attempted`;
     
     // Show skipped section only if there are skipped questions
     const skippedSection = document.getElementById('skippedSection');
     if (skipped > 0) {
         skippedSection.style.display = 'flex';
-        document.getElementById('skippedCount').textContent = skipped;
+        document.getElementById('skippedCount').textContent = `${skipped} out of ${total} questions`;
     } else {
         skippedSection.style.display = 'none';
     }
